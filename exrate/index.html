@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>환율 정보</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        height: 100vh; /* 전체 화면 꽉 채움 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #container {
+        width: 90%;
+        max-width: 500px;
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        text-align: center;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        color: #333;
+      }
+
+      .rate-card {
+        background: #f7f7f7;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #444;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        margin-top: 15px;
+        width: 100%;
+        padding: 14px 0;
+        border: none;
+        background: #0078ff;
+        color: white;
+        font-size: 1.2rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #005fcc;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="container">
+      <h1>환율 정보</h1>
+
+      <div class="rate-card" id="usd">불러오는 중...</div>
+      <div class="rate-card" id="jpy"></div>
+      <div class="rate-card" id="eur"></div>
+      <div class="rate-card" id="cny"></div>
+
+      <button onclick="fetchExchangeRate()">새로 고침</button>
+    </div>
+
+    <script>
+      function fetchExchangeRate() {
+        fetch("https://api.exchangerate-api.com/v4/latest/USD")
+          .then((response) => response.json())
+          .then((data) => {
+            const KRW = data.rates.KRW; 
+            const JPY = data.rates.JPY;
+            const EUR = data.rates.EUR;
+            const CNY = data.rates.CNY;
+
+            document.getElementById("usd").innerText = `💵 1 USD = ${KRW} KRW`;
+            document.getElementById("jpy").innerText = `💴 100 JPY = ${(100 * KRW / JPY).toFixed(2)} KRW`;
+            document.getElementById("eur").innerText = `💶 1 EUR = ${(KRW / EUR).toFixed(2)} KRW`;
+            document.getElementById("cny").innerText = `💴 1 CNY = ${(KRW / CNY).toFixed(2)} KRW`;
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      setInterval(fetchExchangeRate, 1800000); // 30분마다 자동 갱신
+      fetchExchangeRate(); // 초기 실행
+    </script>
+  </body>
+</html>
